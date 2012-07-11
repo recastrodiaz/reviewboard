@@ -23,7 +23,6 @@ class CVSTool(SCMTool):
     }
 
     rev_re = re.compile(r'^.*?(\d+(\.\d+)+)\r?$')
-    rev_re_extended = re.compile(r'^\s*(\w+\s+\w+\s+\d+\s+\d+:\d+:\d+\s+\d+)\r?$')
     repopath_re = re.compile(r'^(?P<hostname>.*):(?P<port>\d+)?(?P<path>.*)')
     ext_cvsroot_re = re.compile(r':ext:([^@]+@)?(?P<hostname>[^:/]+)')
 
