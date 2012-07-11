@@ -23,6 +23,7 @@ class CVSTool(SCMTool):
     }
 
     rev_re = re.compile(r'^.*?(\d+(\.\d+)+)\r?$')
+    rev_re_extended = re.compile(r'^\s*(\w+\s+\w+\s+\d+\s+\d+:\d+:\d+\s+\d+)\r?$')
     repopath_re = re.compile(r'^(?P<hostname>.*):(?P<port>\d+)?(?P<path>.*)')
     ext_cvsroot_re = re.compile(r':ext:([^@]+@)?(?P<hostname>[^:/]+)')
 
@@ -52,10 +53,16 @@ class CVSTool(SCMTool):
             return file_str, PRE_CREATION
 
         m = self.rev_re.match(revision_str)
-        if not m:
-            raise SCMError("Unable to parse diff revision header '%s'" %
-                           revision_str)
-        return file_str, m.group(1)
+        if m:
+            return file_str, m.group(1)
+        else :
+            #Check whether the revision number is appended to the file name 'filename.ext:X.Y.Z'
+            colon_idx = file_str.rfind(":")
+            if colon_idx == -1:
+                raise SCMError("Unable to parse diff revision header at '%s' | '%s'" % 
+                              (file_str,  revision_str))
+            return file_str[:colon_idx], file_str[colon_idx+1:]
+
 
     def get_diffs_use_absolute_paths(self):
         return True

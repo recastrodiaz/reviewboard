@@ -387,6 +387,26 @@ class CVSTests(SCMTestCase):
         self.assertEqual(file.newInfo, '26 Jul 2007 10:20:20 -0000')
         self.assertEqual(file.data, diff)
 
+    def test_simple_diff2(self):
+        """Testing parsing CVS simple diff 2"""
+        diff = "Index: %s/test/testfile\r\n" + \
+            "diff -u %s/test/testfile:1.5.2.1 %s/test/testfile:1.5.2.2\r\n" + \
+            "--- test/testfile:1.5.2.1	Thu Dec 15 16:27:47 2011\r\n" + \
+            "+++ test/testfile	Tue Jan 10 10:36:26 2012\r\n" + \
+            "@@ -1 +1,2 @@\r\n" + \
+            "-test content\r\n" + \
+            "+updated test content\r\n" + \
+            "+added info\r\n"
+        diff = diff % (self.cvs_repo_path, self.cvs_repo_path, self.cvs_repo_path)
+
+        file = self.tool.get_parser(diff).parse()[0]
+        f2, revision = self.tool.parse_diff_revision(file.origFile, file.origInfo,
+                                                    file.moved)
+        self.assertEqual(f2, 'test/testfile')
+        self.assertEqual(revision, '1.5.2.1')
+        self.assertEqual(file.newFile, 'test/testfile')
+        self.assertEqual(file.newInfo, 'Tue Jan 10 10:36:26 2012')
+
     def test_bad_diff(self):
         """Testing parsing CVS diff with bad info"""
         diff = "Index: newfile\n===========================================" + \
